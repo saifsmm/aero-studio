@@ -1,20 +1,22 @@
 import { useState } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
-  hero: '/assets/hero-cyclist-cinematic.jpg',
+  hero: '/assets/hero-cyclist-editorial.png',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
   helmet: '/assets/helmet-closeup.jpeg',
   mark: '/assets/aero-mark.jpeg',
   whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
   blackKitSource: '/assets/aero-kit-black-source.jpg',
-  whiteJersey: '/assets/product-jersey-white.jpg',
-  blackJersey: '/assets/product-jersey-black.jpg',
-  whiteBib: '/assets/product-bib-white.jpg',
-  blackBib: '/assets/product-bib-black.jpg',
+  whiteJersey: '/assets/product-cutout-jersey-white.png',
+  blackJersey: '/assets/product-cutout-jersey-black.png',
+  whiteBib: '/assets/product-cutout-bib-white.png',
+  blackBib: '/assets/product-cutout-bib-black.png',
 }
+
+const contactEmail = 'aero.studio@outlook.com'
 
 const storyImages = [
   {
@@ -107,16 +109,28 @@ function FadeIn({ children, className = '', delay = 0 }) {
 }
 
 function Header() {
+  const { scrollY } = useScroll()
+  const [hidden, setHidden] = useState(false)
+
+  useMotionValueEvent(scrollY, 'change', (current) => {
+    const previous = scrollY.getPrevious() ?? 0
+    setHidden(current > previous && current > 90)
+  })
+
   return (
-    <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/45 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+    <motion.header
+      className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/45 shadow-[0_1px_40px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
+      animate={{ y: hidden ? '-100%' : '0%' }}
+      transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="mx-auto flex min-h-16 max-w-7xl flex-col justify-center gap-3 px-5 py-4 sm:h-16 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-0 lg:px-12">
         <a href="#top" className="flex items-center gap-3" aria-label="Aero Studio home">
           <img src={assets.mark} alt="" className="h-7 w-7 object-cover invert" />
           <span className="text-[0.68rem] font-medium uppercase tracking-[0.42em] text-white">
             Aero Studio
           </span>
         </a>
-        <nav className="hidden items-center gap-7 text-[0.58rem] uppercase tracking-[0.34em] text-zinc-400 sm:flex">
+        <nav className="flex items-center gap-4 overflow-x-auto text-[0.55rem] uppercase tracking-[0.28em] text-zinc-400 sm:gap-7 sm:overflow-visible sm:text-[0.58rem] sm:tracking-[0.34em]">
           <a href="#story" className="transition hover:text-white">
             story
           </a>
@@ -131,7 +145,7 @@ function Header() {
           </a>
         </nav>
       </div>
-    </header>
+    </motion.header>
   )
 }
 
@@ -231,9 +245,9 @@ function StoryCard({ item, index }) {
 
 function VisualStory() {
   return (
-    <section id="story" className="bg-black px-5 py-20 sm:px-8 lg:px-12">
-      <div className="mx-auto max-w-7xl">
-        <FadeIn className="mb-14 flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
+    <section id="story" className="bg-black px-5 py-24 sm:px-8 lg:px-12">
+      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.42fr_0.58fr]">
+        <FadeIn className="lg:sticky lg:top-28 lg:h-fit">
           <div>
             <p className="text-[0.62rem] uppercase tracking-[0.52em] text-zinc-500">
               visual story
@@ -313,7 +327,7 @@ function CollectionPreview() {
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="h-full w-full object-contain grayscale transition duration-1000 group-hover:scale-[1.035]"
+                  className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
                   loading="lazy"
                   decoding="async"
                 />
@@ -371,7 +385,7 @@ function ContactForm() {
           </h2>
           <p className="mt-8 max-w-md text-sm font-light leading-8 tracking-[0.08em] text-zinc-400">
             Leave your details and Aero Studio will contact you soon. For direct email,
-            use hello@aerostudio.ae.
+            use {contactEmail}.
           </p>
         </FadeIn>
 
@@ -393,7 +407,7 @@ function ContactForm() {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="grid gap-4">
+            <form onSubmit={handleSubmit} noValidate className="grid gap-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <FormField label="name" name="name" required />
                 <FormField label="email" name="email" type="email" required />
@@ -481,8 +495,8 @@ function Footer() {
         <a href="https://www.instagram.com/aerostudio.ae/" target="_blank" rel="noreferrer" className="transition hover:text-white">
           Instagram
         </a>
-        <a href="mailto:hello@aerostudio.ae" className="transition hover:text-white">
-          hello@aerostudio.ae
+        <a href={`mailto:${contactEmail}`} className="transition hover:text-white">
+          {contactEmail}
         </a>
         <span>aerostudio.ae</span>
       </div>
