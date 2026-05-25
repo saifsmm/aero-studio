@@ -1,53 +1,56 @@
+import { useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
-  hero: '/assets/cyclist-motion.jpeg',
-  frame: '/assets/bike-frame-closeup.jpeg',
-  desertSun: '/assets/desert-sun.jpeg',
+  hero: '/assets/hero-cyclist-cinematic.jpg',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
-  road: '/assets/desert-road.jpeg',
-  mark: '/assets/aero-mark.jpeg',
   helmet: '/assets/helmet-closeup.jpeg',
-  speed: '/assets/designed-for-speed.jpeg',
+  mark: '/assets/aero-mark.jpeg',
+  whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
+  blackKitSource: '/assets/aero-kit-black-source.jpg',
+  whiteJersey: '/assets/product-jersey-white.jpg',
+  blackJersey: '/assets/product-jersey-black.jpg',
+  whiteBib: '/assets/product-bib-white.jpg',
+  blackBib: '/assets/product-bib-black.jpg',
 }
 
 const storyImages = [
   {
-    title: 'Desert Roads',
-    label: '25.1237 N / 55.2744 E',
-    image: assets.road,
+    title: 'White Jersey',
+    label: 'race cut / light surface',
+    image: assets.whiteJerseySource,
     className: 'md:col-span-7 md:row-span-2',
   },
   {
-    title: 'Black Kits',
-    label: 'Race silhouette',
+    title: 'Rider Kit',
+    label: 'second-skin silhouette',
     image: assets.riderBack,
     className: 'md:col-span-5',
   },
   {
-    title: 'Frame Precision',
-    label: 'Aero profile',
-    image: assets.frame,
+    title: 'Black Kit',
+    label: 'jersey and bib short',
+    image: assets.blackKitSource,
     className: 'md:col-span-5',
   },
   {
     title: 'Fabric Detail',
-    label: 'Second skin texture',
+    label: 'mesh / compression',
     image: assets.fabric,
     className: 'md:col-span-4',
   },
   {
-    title: 'Helmet System',
-    label: 'Quiet speed',
+    title: 'Cycling Glasses',
+    label: 'helmet system',
     image: assets.helmet,
     className: 'md:col-span-4',
   },
   {
-    title: 'Motion Study',
-    label: 'Blur / form / velocity',
-    image: assets.hero,
+    title: 'Bib Short',
+    label: 'engineered comfort',
+    image: assets.blackBib,
     className: 'md:col-span-4',
   },
 ]
@@ -63,17 +66,30 @@ const performanceDetails = [
 
 const products = [
   {
-    title: 'jersey',
-    image: assets.riderBack,
+    title: 'Aero Jersey White',
+    image: assets.whiteJersey,
   },
   {
-    title: 'bib short',
-    image: assets.fabric,
+    title: 'Aero Jersey Black',
+    image: assets.blackJersey,
   },
   {
-    title: 'full race kit',
-    image: assets.hero,
+    title: 'Aero Bib Short White',
+    image: assets.whiteBib,
   },
+  {
+    title: 'Aero Bib Short Black',
+    image: assets.blackBib,
+  },
+]
+
+const productOptions = [
+  'Jersey',
+  'Bib Shorts',
+  'Full Kit',
+  'Socks',
+  'Cycling Glasses',
+  'General Inquiry',
 ]
 
 function FadeIn({ children, className = '', delay = 0 }) {
@@ -92,7 +108,7 @@ function FadeIn({ children, className = '', delay = 0 }) {
 
 function Header() {
   return (
-    <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/35 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/45 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
         <a href="#top" className="flex items-center gap-3" aria-label="Aero Studio home">
           <img src={assets.mark} alt="" className="h-7 w-7 object-cover invert" />
@@ -100,15 +116,18 @@ function Header() {
             Aero Studio
           </span>
         </a>
-        <nav className="hidden items-center gap-8 text-[0.58rem] uppercase tracking-[0.34em] text-zinc-400 sm:flex">
+        <nav className="hidden items-center gap-7 text-[0.58rem] uppercase tracking-[0.34em] text-zinc-400 sm:flex">
           <a href="#story" className="transition hover:text-white">
             story
           </a>
           <a href="#performance" className="transition hover:text-white">
             performance
           </a>
-          <a href="#drop" className="transition hover:text-white">
+          <a href="#collection" className="transition hover:text-white">
             drop
+          </a>
+          <a href="#contact" className="transition hover:text-white">
+            contact
           </a>
         </nav>
       </div>
@@ -118,20 +137,23 @@ function Header() {
 
 function Hero() {
   const { scrollY } = useScroll()
-  const y = useTransform(scrollY, [0, 900], [0, 150])
-  const scale = useTransform(scrollY, [0, 900], [1.06, 1.16])
+  const y = useTransform(scrollY, [0, 900], [0, 130])
+  const scale = useTransform(scrollY, [0, 900], [1.02, 1.09])
 
   return (
     <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
-      <motion.img
-        src={assets.hero}
-        alt="Black and white cyclist in motion"
-        className="absolute inset-0 h-full w-full object-cover opacity-70"
-        style={{ y, scale }}
-        loading="eager"
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.3)_42%,rgba(0,0,0,0.95)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black to-transparent" />
+      <motion.picture style={{ y, scale }} className="absolute inset-0">
+        <source srcSet={assets.hero} media="(min-width: 768px)" />
+        <img
+          src={assets.hero}
+          alt="Cinematic black and white cyclist in motion"
+          className="h-full w-full object-cover opacity-85"
+          loading="eager"
+          decoding="async"
+        />
+      </motion.picture>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.34)_42%,rgba(0,0,0,0.94)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black to-transparent" />
 
       <motion.div
         className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center"
@@ -149,7 +171,7 @@ function Hero() {
           <span>25.1237° N</span>
           <span>55.2744° E</span>
         </div>
-        <a href="#drop" className="mt-12 border border-white/35 px-7 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
+        <a href="#collection" className="mt-12 border border-white/35 px-7 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
           Coming Soon
         </a>
       </motion.div>
@@ -189,16 +211,17 @@ function StoryCard({ item, index }) {
         src={item.image}
         alt={item.title}
         className="h-full w-full object-cover grayscale transition duration-1000 group-hover:scale-105"
-        initial={{ scale: 1.14 }}
-        whileInView={{ scale: 1.02 }}
+        initial={{ scale: 1.1 }}
+        whileInView={{ scale: 1.01 }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, ease: 'easeOut' }}
         loading="lazy"
+        decoding="async"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/20" />
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-5 sm:p-7">
         <h3 className="text-xl font-light uppercase tracking-[0.22em] text-white">{item.title}</h3>
-        <p className="max-w-32 text-right text-[0.58rem] uppercase leading-5 tracking-[0.32em] text-zinc-400">
+        <p className="max-w-36 text-right text-[0.58rem] uppercase leading-5 tracking-[0.32em] text-zinc-400">
           {item.label}
         </p>
       </div>
@@ -216,11 +239,11 @@ function VisualStory() {
               visual story
             </p>
             <h2 className="mt-5 max-w-3xl text-4xl font-extralight uppercase leading-tight tracking-[0.16em] text-white sm:text-6xl">
-              Speed rendered in shadow.
+              Apparel built in shadow.
             </h2>
           </div>
           <p className="max-w-sm text-sm font-light leading-7 tracking-[0.08em] text-zinc-500">
-            desert roads, black kits, motion blur, carbon surfaces, fabric grain.
+            jerseys, bib shorts, glasses, fabric texture, close stitching, rider fit.
           </p>
         </FadeIn>
 
@@ -265,7 +288,7 @@ function PerformanceDetails() {
 
 function CollectionPreview() {
   return (
-    <section className="bg-black px-5 py-28 sm:px-8 lg:px-12">
+    <section id="collection" className="bg-black px-5 py-28 sm:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <FadeIn className="mb-14 text-center">
           <p className="text-[0.62rem] uppercase tracking-[0.52em] text-zinc-500">
@@ -276,29 +299,30 @@ function CollectionPreview() {
           </h2>
         </FadeIn>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {products.map((product) => (
             <motion.article
               key={product.title}
-              className="group overflow-hidden border border-white/10 bg-zinc-950"
+              className="group overflow-hidden border border-white/10 bg-[#050505]"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
             >
-              <div className="aspect-[4/5] overflow-hidden">
+              <div className="flex aspect-[4/5] items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08),rgba(0,0,0,0.92)_68%)] p-5">
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="h-full w-full object-cover grayscale transition duration-1000 group-hover:scale-105"
+                  className="h-full w-full object-contain grayscale transition duration-1000 group-hover:scale-[1.035]"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
-              <div className="flex items-center justify-between gap-4 border-t border-white/10 p-6">
-                <h3 className="text-sm font-light uppercase tracking-[0.32em] text-white">
+              <div className="border-t border-white/10 p-6">
+                <h3 className="min-h-10 text-sm font-light uppercase leading-6 tracking-[0.28em] text-white">
                   {product.title}
                 </h3>
-                <p className="text-[0.56rem] uppercase tracking-[0.28em] text-zinc-500">
+                <p className="mt-5 text-[0.56rem] uppercase tracking-[0.28em] text-zinc-500">
                   Coming Soon
                 </p>
               </div>
@@ -313,49 +337,156 @@ function CollectionPreview() {
 function QuoteSection() {
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-5 text-center">
-      <img
-        src={assets.speed}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-35"
-        loading="lazy"
-      />
-      <div className="absolute inset-0 bg-black/55" />
       <FadeIn className="relative z-10">
         <h2 className="text-4xl font-extralight uppercase tracking-[0.32em] text-white sm:text-6xl lg:text-7xl">
           Designed For Speed
         </h2>
-        <p className="mt-8 text-[0.68rem] uppercase tracking-[0.38em] text-zinc-400">
-          performance cycling apparel from dubai.
-        </p>
+        <div className="mx-auto mt-10 grid max-w-lg grid-cols-2 gap-8 text-[0.68rem] uppercase tracking-[0.42em] text-zinc-400">
+          <span>25.1237° N</span>
+          <span>55.2744° E</span>
+        </div>
       </FadeIn>
     </section>
   )
 }
 
+function ContactForm() {
+  const [submitted, setSubmitted] = useState(false)
+  const [interest, setInterest] = useState('Full Kit')
+
+  function handleSubmit(event) {
+    event.preventDefault()
+    setSubmitted(true)
+  }
+
+  return (
+    <section id="contact" className="bg-[#050505] px-5 py-28 sm:px-8 lg:px-12">
+      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+        <FadeIn>
+          <p className="text-[0.62rem] uppercase tracking-[0.52em] text-zinc-500">
+            contact us
+          </p>
+          <h2 className="mt-6 text-4xl font-extralight uppercase leading-tight tracking-[0.16em] text-white sm:text-6xl">
+            Pre order.
+          </h2>
+          <p className="mt-8 max-w-md text-sm font-light leading-8 tracking-[0.08em] text-zinc-400">
+            Leave your details and Aero Studio will contact you soon. For direct email,
+            use hello@aerostudio.ae.
+          </p>
+        </FadeIn>
+
+        <FadeIn>
+          {submitted ? (
+            <div className="border border-white/10 bg-black p-8 sm:p-10">
+              <p className="text-[0.62rem] uppercase tracking-[0.42em] text-zinc-500">
+                request received
+              </p>
+              <h3 className="mt-5 text-3xl font-extralight uppercase tracking-[0.14em] text-white">
+                Thank you, we will contact you soon.
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSubmitted(false)}
+                className="mt-10 border border-white/25 px-6 py-4 text-[0.62rem] uppercase tracking-[0.34em] text-white transition hover:border-white hover:bg-white hover:text-black"
+              >
+                Send Another
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField label="name" name="name" required />
+                <FormField label="email" name="email" type="email" required />
+              </div>
+              <FormField label="phone" name="phone" type="tel" required />
+              <label className="grid gap-3">
+                <span className="text-[0.58rem] uppercase tracking-[0.36em] text-zinc-500">
+                  product interest
+                </span>
+                <select
+                  value={interest}
+                  onChange={(event) => setInterest(event.target.value)}
+                  className="h-14 border border-white/10 bg-black px-4 text-sm font-light uppercase tracking-[0.18em] text-white outline-none transition focus:border-white/45"
+                >
+                  {productOptions.map((option) => (
+                    <option key={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-3">
+                <span className="text-[0.58rem] uppercase tracking-[0.36em] text-zinc-500">
+                  message
+                </span>
+                <textarea
+                  name="message"
+                  rows="6"
+                  required
+                  className="resize-none border border-white/10 bg-black px-4 py-4 text-sm font-light tracking-[0.08em] text-white outline-none transition placeholder:text-zinc-700 focus:border-white/45"
+                  placeholder="Tell us what you are interested in."
+                />
+              </label>
+              <button
+                type="submit"
+                className="mt-4 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black"
+              >
+                Submit
+              </button>
+            </form>
+          )}
+        </FadeIn>
+      </div>
+    </section>
+  )
+}
+
+function FormField({ label, name, type = 'text', required = false }) {
+  return (
+    <label className="grid gap-3">
+      <span className="text-[0.58rem] uppercase tracking-[0.36em] text-zinc-500">
+        {label}
+      </span>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        className="h-14 border border-white/10 bg-black px-4 text-sm font-light tracking-[0.08em] text-white outline-none transition placeholder:text-zinc-700 focus:border-white/45"
+      />
+    </label>
+  )
+}
+
 function FinalCta() {
   return (
-    <section id="drop" className="bg-black px-5 pb-8 pt-28 sm:px-8 lg:px-12">
+    <section id="drop" className="bg-black px-5 pt-28 sm:px-8 lg:px-12">
       <FadeIn className="mx-auto flex min-h-[68vh] max-w-6xl flex-col items-center justify-center text-center">
         <img src={assets.mark} alt="" className="mb-10 h-14 w-14 object-cover invert" />
         <h2 className="text-5xl font-extralight uppercase leading-none tracking-[0.16em] text-white sm:text-7xl lg:text-8xl">
-          Race Day Ready
+          Coming Soon
         </h2>
-        <p className="mt-8 text-sm font-light uppercase tracking-[0.32em] text-zinc-500">
-          technical cycling apparel.
+        <p className="mt-8 text-sm font-light uppercase tracking-[0.28em] text-zinc-500">
+          Technical cycling apparel from Dubai.
         </p>
-        <a href="mailto:drop@aerostudio.ae" className="mt-12 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
-          Join The Drop
+        <a href="#contact" className="mt-12 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
+          Pre Order
         </a>
       </FadeIn>
+    </section>
+  )
+}
 
-      <footer className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-white/10 py-7 text-[0.6rem] uppercase tracking-[0.34em] text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+function Footer() {
+  return (
+    <footer className="bg-black px-5 pb-8 sm:px-8 lg:px-12">
+      <div className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-white/10 py-7 text-[0.6rem] uppercase tracking-[0.34em] text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
         <a href="https://www.instagram.com/aerostudio.ae/" target="_blank" rel="noreferrer" className="transition hover:text-white">
           Instagram
         </a>
+        <a href="mailto:hello@aerostudio.ae" className="transition hover:text-white">
+          hello@aerostudio.ae
+        </a>
         <span>aerostudio.ae</span>
-        <span>Aero Studio</span>
-      </footer>
-    </section>
+      </div>
+    </footer>
   )
 }
 
@@ -370,6 +501,8 @@ export default function App() {
       <CollectionPreview />
       <QuoteSection />
       <FinalCta />
+      <ContactForm />
+      <Footer />
       <div className="pointer-events-none fixed inset-0 z-50 grain opacity-[0.075]" />
     </main>
   )
