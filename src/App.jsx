@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
   hero: '/assets/hero-cyclist-editorial.png',
+  navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
   helmet: '/assets/helmet-closeup.jpeg',
@@ -109,28 +110,16 @@ function FadeIn({ children, className = '', delay = 0 }) {
 }
 
 function Header() {
-  const { scrollY } = useScroll()
-  const [hidden, setHidden] = useState(false)
-
-  useMotionValueEvent(scrollY, 'change', (current) => {
-    const previous = scrollY.getPrevious() ?? 0
-    setHidden(current > previous && current > 90)
-  })
-
   return (
-    <motion.header
-      className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-black/45 shadow-[0_1px_40px_rgba(0,0,0,0.42)] backdrop-blur-2xl"
-      animate={{ y: hidden ? '-100%' : '0%' }}
-      transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="mx-auto flex min-h-16 max-w-7xl flex-col justify-center gap-3 px-5 py-4 sm:h-16 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-0 lg:px-12">
+    <header className="fixed inset-x-0 top-0 z-40 bg-transparent">
+      <div className="flex min-h-12 items-center justify-between px-6 py-4 sm:px-10 lg:px-12">
         <a href="#top" className="flex items-center gap-3" aria-label="Aero Studio home">
-          <img src={assets.mark} alt="" className="h-7 w-7 object-cover invert" />
-          <span className="text-[0.68rem] font-medium uppercase tracking-[0.42em] text-white">
+          <img src={assets.navMark} alt="" className="h-4 w-10 object-contain" />
+          <span className="whitespace-nowrap text-[0.54rem] font-medium uppercase tracking-[0.46em] text-white/90">
             Aero Studio
           </span>
         </a>
-        <nav className="flex items-center gap-4 overflow-x-auto text-[0.55rem] uppercase tracking-[0.28em] text-zinc-400 sm:gap-7 sm:overflow-visible sm:text-[0.58rem] sm:tracking-[0.34em]">
+        <nav className="flex items-center gap-5 overflow-x-auto text-[0.5rem] uppercase tracking-[0.38em] text-white/55 sm:gap-9 sm:overflow-visible">
           <a href="#story" className="transition hover:text-white">
             story
           </a>
@@ -145,7 +134,7 @@ function Header() {
           </a>
         </nav>
       </div>
-    </motion.header>
+    </header>
   )
 }
 
@@ -161,31 +150,31 @@ function Hero() {
         <img
           src={assets.hero}
           alt="Cinematic black and white cyclist in motion"
-          className="h-full w-full object-cover opacity-85"
+          className="h-full w-full object-cover object-center opacity-95"
           loading="eager"
           decoding="async"
         />
       </motion.picture>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.08)_0%,rgba(0,0,0,0.34)_42%,rgba(0,0,0,0.94)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_44%,rgba(0,0,0,0.78)_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 to-transparent" />
 
       <motion.div
-        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center"
+        className="relative z-10 mx-auto flex max-w-5xl -translate-y-2 flex-col items-center px-6 text-center sm:-translate-y-5"
         initial={{ opacity: 0, filter: 'blur(12px)' }}
         animate={{ opacity: 1, filter: 'blur(0px)' }}
         transition={{ duration: 1.3, ease: 'easeOut' }}
       >
-        <h1 className="text-balance text-[2.55rem] font-light uppercase leading-none tracking-[0.13em] text-white sm:text-7xl sm:tracking-[0.22em] lg:text-8xl">
+        <h1 className="text-balance text-[2.45rem] font-light uppercase leading-none tracking-[0.16em] text-white sm:text-5xl sm:tracking-[0.34em] lg:text-6xl">
           Aero Studio
         </h1>
-        <p className="mt-7 text-[0.68rem] uppercase tracking-[0.56em] text-zinc-300">
+        <p className="mt-5 text-[0.64rem] uppercase tracking-[0.56em] text-zinc-300">
           Designed For Speed
         </p>
-        <div className="mt-10 grid grid-cols-2 gap-7 text-[0.62rem] uppercase tracking-[0.46em] text-zinc-400">
+        <div className="mt-7 grid grid-cols-2 gap-8 text-[0.54rem] uppercase tracking-[0.46em] text-zinc-400">
           <span>25.1237° N</span>
           <span>55.2744° E</span>
         </div>
-        <a href="#collection" className="mt-12 border border-white/35 px-7 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
+        <a href="#collection" className="mt-8 border border-white/30 px-8 py-3.5 text-[0.56rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
           Coming Soon
         </a>
       </motion.div>
