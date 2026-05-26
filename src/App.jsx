@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
-  hero: '/assets/hero-cyclist-editorial.png',
+  hero: '/assets/hero-first-page.png',
   navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
@@ -95,6 +95,19 @@ const productOptions = [
   'General Inquiry',
 ]
 
+function scrollToHash(id, behavior = 'smooth') {
+  const section = document.querySelector(id)
+  if (!section) return
+  const top = section.getBoundingClientRect().top + window.scrollY
+  window.scrollTo({ top, behavior })
+}
+
+function scrollToSection(event, id) {
+  event.preventDefault()
+  scrollToHash(id)
+  window.history.pushState(null, '', id)
+}
+
 function FadeIn({ children, className = '', delay = 0 }) {
   return (
     <motion.div
@@ -112,24 +125,29 @@ function FadeIn({ children, className = '', delay = 0 }) {
 function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-40 bg-transparent">
-      <div className="flex min-h-12 items-center justify-between px-6 py-4 sm:px-10 lg:px-12">
-        <a href="#top" className="flex items-center gap-3" aria-label="Aero Studio home">
-          <img src={assets.navMark} alt="" className="h-4 w-10 object-contain" />
-          <span className="whitespace-nowrap text-[0.54rem] font-medium uppercase tracking-[0.46em] text-white/90">
+      <div className="flex min-h-12 items-center gap-4 px-3 py-4 sm:px-10 lg:px-12">
+        <a
+          href="#top"
+          onClick={(event) => scrollToSection(event, '#top')}
+          className="flex shrink-0 items-center gap-3"
+          aria-label="Aero Studio home"
+        >
+          <img src={assets.navMark} alt="" className="h-3.5 w-9 object-contain sm:h-4 sm:w-10" />
+          <span className="hidden whitespace-nowrap text-[0.54rem] font-medium uppercase tracking-[0.46em] text-white/90 sm:inline">
             Aero Studio
           </span>
         </a>
-        <nav className="flex items-center gap-5 overflow-x-auto text-[0.5rem] uppercase tracking-[0.38em] text-white/55 sm:gap-9 sm:overflow-visible">
-          <a href="#story" className="transition hover:text-white">
+        <nav className="ml-auto flex min-w-0 items-center justify-end gap-3 overflow-visible text-[0.47rem] uppercase tracking-[0.18em] text-white/60 min-[390px]:gap-4 min-[390px]:tracking-[0.24em] sm:gap-9 sm:text-[0.5rem] sm:tracking-[0.38em]">
+          <a href="#story" onClick={(event) => scrollToSection(event, '#story')} className="transition hover:text-white">
             story
           </a>
-          <a href="#performance" className="transition hover:text-white">
+          <a href="#performance" onClick={(event) => scrollToSection(event, '#performance')} className="transition hover:text-white">
             performance
           </a>
-          <a href="#collection" className="transition hover:text-white">
+          <a href="#collection" onClick={(event) => scrollToSection(event, '#collection')} className="transition hover:text-white">
             drop
           </a>
-          <a href="#contact" className="transition hover:text-white">
+          <a href="#contact" onClick={(event) => scrollToSection(event, '#contact')} className="transition hover:text-white">
             contact
           </a>
         </nav>
@@ -174,7 +192,7 @@ function Hero() {
           <span>25.1237° N</span>
           <span>55.2744° E</span>
         </div>
-        <a href="#collection" className="mt-8 border border-white/30 px-8 py-3.5 text-[0.56rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
+        <a href="#collection" onClick={(event) => scrollToSection(event, '#collection')} className="mt-8 border border-white/30 px-8 py-3.5 text-[0.56rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
           Coming Soon
         </a>
       </motion.div>
@@ -317,7 +335,7 @@ function CollectionPreview() {
                   src={product.image}
                   alt={product.title}
                   className="h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
               </div>
@@ -469,7 +487,7 @@ function FinalCta() {
         <p className="mt-8 text-sm font-light uppercase tracking-[0.28em] text-zinc-500">
           Technical cycling apparel from Dubai.
         </p>
-        <a href="#contact" className="mt-12 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
+        <a href="#contact" onClick={(event) => scrollToSection(event, '#contact')} className="mt-12 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black">
           Pre Order
         </a>
       </FadeIn>
@@ -494,6 +512,21 @@ function Footer() {
 }
 
 export default function App() {
+  useEffect(() => {
+    function handleHashChange() {
+      if (window.location.hash) {
+        scrollToHash(window.location.hash)
+      }
+    }
+
+    window.addEventListener('hashchange', handleHashChange)
+    if (window.location.hash) {
+      window.requestAnimationFrame(() => scrollToHash(window.location.hash, 'auto'))
+    }
+
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
+
   return (
     <main className="min-h-screen overflow-x-hidden bg-black text-white">
       <Header />
