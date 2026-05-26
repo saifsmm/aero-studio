@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
-  hero: '/assets/hero-cyclist-editorial.png',
+  hero: '/assets/hero-cyclist-current.png',
   navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
@@ -17,6 +17,11 @@ const assets = {
   detailBlackZipperClose: '/assets/detail-black-zipper-close.png',
   detailWhiteKitClose: '/assets/detail-white-kit-close.png',
   detailChamois: '/assets/detail-chamois.png',
+  detailChamoisCurrent: '/assets/detail-chamois-current.png',
+  detailWhiteKitCurrent: '/assets/detail-white-kit-current.png',
+  detailGridCurrent: '/assets/detail-grid-current.png',
+  detailBlackZipperCurrent: '/assets/detail-black-zipper-current.png',
+  detailBlackSleeveCurrent: '/assets/detail-black-sleeve-current.png',
   whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
   blackKitSource: '/assets/aero-kit-black-source.jpg',
   whiteJersey: '/assets/product-cutout-jersey-white.png',
@@ -45,16 +50,36 @@ const storySelectors = [
   {
     number: '03',
     label: 'Bib Short',
-    image: assets.detailChamois,
+    image: assets.detailChamoisCurrent,
     alt: 'Aero Studio bib short chamois detail',
     imageClassName: 'object-cover',
   },
   {
     number: '04',
     label: 'Details',
-    image: assets.detailBlackZipperClose,
-    alt: 'Aero Studio black kit zipper and fabric detail',
-    imageClassName: 'object-cover',
+    alt: 'Aero Studio kit fabric, zipper, stitching, and bib details',
+    images: [
+      {
+        src: assets.detailWhiteKitCurrent,
+        alt: 'Aero Studio white jersey and bib construction detail',
+        label: 'white kit detail',
+      },
+      {
+        src: assets.detailGridCurrent,
+        alt: 'Aero Studio black and white fabric detail grid',
+        label: 'panel details',
+      },
+      {
+        src: assets.detailBlackZipperCurrent,
+        alt: 'Aero Studio black jersey zipper detail',
+        label: 'zipper detail',
+      },
+      {
+        src: assets.detailBlackSleeveCurrent,
+        alt: 'Aero Studio black sleeve texture detail',
+        label: 'fabric detail',
+      },
+    ],
   },
 ]
 
@@ -240,6 +265,7 @@ function VisualStory() {
   const productY = useTransform(scrollYProgress, [0.15, 0.45], [45, -45])
   const productRotate = useTransform(scrollYProgress, [0.15, 0.45], [-1.2, 1.2])
   const activeScene = storySelectors[activeStory]
+  const isDetailScene = Boolean(activeScene.images)
 
   return (
     <section id="story" className="relative overflow-hidden bg-black px-5 py-24 sm:px-8 lg:px-12">
@@ -294,18 +320,50 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
               transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
             >
               <AnimatePresence mode="wait">
-                <motion.img
-                  key={activeScene.label}
-                  src={activeScene.image}
-                  alt={activeScene.alt}
-                  className={`aero-float mx-auto h-[34rem] w-full drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] lg:h-[48rem] ${activeScene.imageClassName}`}
-                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: -18, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  loading="eager"
-                  decoding="async"
-                />
+                {isDetailScene ? (
+                  <motion.div
+                    key={activeScene.label}
+                    className="mx-auto grid h-[34rem] w-full max-w-4xl grid-cols-2 gap-3 drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] sm:gap-4 lg:h-[48rem]"
+                    initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -18, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {activeScene.images.map((image, index) => (
+                      <motion.figure
+                        key={image.src}
+                        className={`group relative overflow-hidden bg-zinc-950 ${index === 1 ? 'row-span-2' : ''}`}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <img
+                          src={image.src}
+                          alt={image.alt}
+                          className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-[1.035] group-hover:grayscale-0"
+                          loading="eager"
+                          decoding="async"
+                        />
+                        <figcaption className="absolute bottom-4 left-4 text-[0.5rem] uppercase tracking-[0.28em] text-white/65">
+                          {image.label}
+                        </figcaption>
+                      </motion.figure>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <motion.img
+                    key={activeScene.label}
+                    src={activeScene.image}
+                    alt={activeScene.alt}
+                    className={`aero-float mx-auto h-[34rem] w-full drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] lg:h-[48rem] ${activeScene.imageClassName}`}
+                    initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, y: -18, filter: 'blur(10px)' }}
+                    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                    loading="eager"
+                    decoding="async"
+                  />
+                )}
               </AnimatePresence>
             </motion.div>
             <div className="absolute bottom-8 left-1/2 h-10 w-64 -translate-x-1/2 rounded-full bg-black blur-2xl" />
