@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
-  hero: '/assets/hero-first-page.png',
+  hero: '/assets/hero-cyclist-editorial.png',
   navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
   fabric: '/assets/fabric-detail.jpeg',
