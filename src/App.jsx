@@ -10,6 +10,13 @@ const assets = {
   helmet: '/assets/helmet-closeup.jpeg',
   mark: '/assets/aero-mark.jpeg',
   whiteKit: '/assets/white-kit-transparent.png',
+  editorialWhiteKit: '/assets/editorial-white-kit.png',
+  editorialBlackKit: '/assets/editorial-black-kit.png',
+  detailBlackZipperWide: '/assets/detail-black-zipper-wide.png',
+  detailBlackSleeve: '/assets/detail-black-sleeve.png',
+  detailBlackZipperClose: '/assets/detail-black-zipper-close.png',
+  detailWhiteKitClose: '/assets/detail-white-kit-close.png',
+  detailChamois: '/assets/detail-chamois.png',
   whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
   blackKitSource: '/assets/aero-kit-black-source.jpg',
   whiteJersey: '/assets/product-cutout-jersey-white.png',
@@ -20,43 +27,25 @@ const assets = {
 
 const contactEmail = 'aero.studio@outlook.com'
 
-const storyImages = [
+const storySelectors = [
+  ['01', 'White Kit'],
+  ['02', 'Black Kit'],
+  ['03', 'Bib Short'],
+  ['04', 'Details'],
+]
+
+const storyCards = [
   {
-    title: 'White Kit',
-    label: 'jersey / strapped bib',
-    image: assets.whiteKit,
-    className: 'md:col-span-7 md:row-span-2',
-    imageClassName: 'object-contain p-8 sm:p-12',
-  },
-  {
-    title: 'Rider Kit',
-    label: 'second-skin silhouette',
+    title: 'Rider Silhouette',
     image: assets.riderBack,
-    className: 'md:col-span-5',
   },
   {
     title: 'Black Kit',
-    label: 'jersey and bib short',
-    image: assets.blackKitSource,
-    className: 'md:col-span-5',
+    image: assets.editorialBlackKit,
   },
   {
     title: 'Fabric Detail',
-    label: 'mesh / compression',
-    image: assets.fabric,
-    className: 'md:col-span-4',
-  },
-  {
-    title: 'Cycling Glasses',
-    label: 'helmet system',
-    image: assets.helmet,
-    className: 'md:col-span-4',
-  },
-  {
-    title: 'Bib Short',
-    label: 'engineered comfort',
-    image: assets.blackBib,
-    className: 'md:col-span-4',
+    image: assets.detailBlackSleeve,
   },
 ]
 
@@ -221,60 +210,125 @@ function BrandStatement() {
   )
 }
 
-function StoryCard({ item, index }) {
-  return (
-    <motion.article
-      className={`group relative min-h-[420px] overflow-hidden border border-white/10 bg-zinc-950 ${item.className}`}
-      initial={{ opacity: 0, clipPath: 'inset(18% 0 18% 0)' }}
-      whileInView={{ opacity: 1, clipPath: 'inset(0% 0 0% 0)' }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 1, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <motion.img
-        src={item.image}
-        alt={item.title}
-        className={`h-full w-full grayscale transition duration-1000 group-hover:scale-105 ${item.imageClassName ?? 'object-cover'}`}
-        initial={{ scale: 1.1 }}
-        whileInView={{ scale: 1.01 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: 'easeOut' }}
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/20" />
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 p-5 sm:p-7">
-        <h3 className="text-xl font-light uppercase tracking-[0.22em] text-white">{item.title}</h3>
-        <p className="max-w-36 text-right text-[0.58rem] uppercase leading-5 tracking-[0.32em] text-zinc-400">
-          {item.label}
-        </p>
-      </div>
-    </motion.article>
-  )
-}
-
 function VisualStory() {
-  return (
-    <section id="story" className="bg-black px-5 py-24 sm:px-8 lg:px-12">
-      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.42fr_0.58fr]">
-        <FadeIn className="lg:sticky lg:top-28 lg:h-fit">
-          <div>
-            <p className="text-[0.62rem] uppercase tracking-[0.52em] text-zinc-500">
-              visual story
-            </p>
-            <h2 className="mt-5 max-w-3xl text-4xl font-extralight uppercase leading-tight tracking-[0.16em] text-white sm:text-6xl">
-              Apparel built in shadow.
-            </h2>
-          </div>
-          <p className="max-w-sm text-sm font-light leading-7 tracking-[0.08em] text-zinc-500">
-            jerseys, bib shorts, glasses, fabric texture, close stitching, rider fit.
-          </p>
-        </FadeIn>
+  const { scrollYProgress } = useScroll()
+  const productY = useTransform(scrollYProgress, [0.15, 0.45], [45, -45])
+  const productRotate = useTransform(scrollYProgress, [0.15, 0.45], [-1.2, 1.2])
 
-        <div className="grid auto-rows-[420px] grid-cols-1 gap-3 md:grid-cols-12">
-          {storyImages.map((item, index) => (
-            <StoryCard key={item.title} item={item} index={index} />
-          ))}
+  return (
+    <section id="story" className="relative overflow-hidden bg-black px-5 py-24 sm:px-8 lg:px-12">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_44%,rgba(255,255,255,0.13),rgba(255,255,255,0.035)_30%,rgba(0,0,0,0)_62%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0)_24%,rgba(255,255,255,0.025)_74%,rgba(0,0,0,0))] opacity-70" />
+
+      <div className="relative mx-auto max-w-[92rem]">
+        <div className="grid min-h-[82vh] items-center gap-14 lg:grid-cols-[0.42fr_0.58fr]">
+          <motion.div
+            className="relative z-10 max-w-xl"
+            initial={{ opacity: 0, y: 34 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-120px' }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="mb-10 flex items-center gap-5">
+              <p className="text-[0.62rem] uppercase tracking-[0.52em] text-zinc-500">
+                visual story
+              </p>
+              <span className="hidden h-px w-16 bg-white/20 sm:block" />
+            </div>
+            <h2 className="text-[3.6rem] font-extralight uppercase leading-[0.98] tracking-[0.16em] text-white sm:text-7xl lg:text-[5.3rem]">
+              Apparel
+              <br />
+              Built In
+              <br />
+              Shadow.
+            </h2>
+            <p className="mt-10 max-w-sm whitespace-pre-line text-sm font-light leading-8 tracking-[0.08em] text-zinc-400 sm:text-base">
+              {`Engineered for speed.
+Designed to disappear.
+
+Every stitch, every panel, every detail built to perform so you can focus on what matters.`}
+            </p>
+            <a
+              href="#collection"
+              onClick={(event) => scrollToSection(event, '#collection')}
+              className="group mt-10 inline-flex items-center gap-6 text-[0.62rem] uppercase tracking-[0.34em] text-white"
+            >
+              <span>Explore Collection</span>
+              <span className="transition duration-500 group-hover:translate-x-2">-&gt;</span>
+            </a>
+          </motion.div>
+
+          <div className="relative min-h-[34rem] lg:min-h-[44rem]">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.12),rgba(255,255,255,0.035)_36%,rgba(0,0,0,0)_68%)] blur-sm" />
+            <motion.div
+              className="relative z-10"
+              style={{ y: productY, rotate: productRotate }}
+              initial={{ opacity: 0, scale: 0.96, filter: 'blur(10px)' }}
+              whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              viewport={{ once: true, margin: '-120px' }}
+              transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <img
+                src={assets.editorialWhiteKit}
+                alt="Aero Studio white jersey and bib short"
+                className="aero-float mx-auto h-[34rem] w-full object-contain drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] lg:h-[48rem]"
+                loading="lazy"
+                decoding="async"
+              />
+            </motion.div>
+            <div className="absolute bottom-8 left-1/2 h-10 w-64 -translate-x-1/2 rounded-full bg-black blur-2xl" />
+          </div>
         </div>
+
+        <motion.div
+          className="relative z-10 mt-8 grid gap-6 border-t border-white/10 pt-7 lg:grid-cols-[1.1fr_0.9fr]"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="grid gap-0 sm:grid-cols-4">
+            {storySelectors.map(([number, label], index) => (
+              <button
+                key={label}
+                type="button"
+                className="group border-white/10 py-4 text-left sm:border-r sm:pr-6"
+              >
+                <span className="block text-[0.56rem] uppercase tracking-[0.32em] text-zinc-600">
+                  {number}
+                </span>
+                <span className="mt-4 block text-[0.64rem] uppercase tracking-[0.34em] text-zinc-300 transition group-hover:text-white">
+                  {label}
+                </span>
+                <span className={`mt-5 block h-px bg-white transition-all duration-500 ${index === 0 ? 'w-20' : 'w-0 group-hover:w-16'}`} />
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {storyCards.map((card, index) => (
+              <motion.article
+                key={card.title}
+                className="group relative h-36 overflow-hidden bg-zinc-950 sm:h-40"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: index * 0.08, ease: 'easeOut' }}
+              >
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="h-full w-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:opacity-90"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <p className="absolute bottom-4 left-4 text-[0.55rem] uppercase tracking-[0.28em] text-white/70">
+                  {card.title}
+                </p>
+              </motion.article>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   )
