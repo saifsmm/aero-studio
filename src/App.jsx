@@ -9,6 +9,7 @@ const assets = {
   fabric: '/assets/fabric-detail.jpeg',
   helmet: '/assets/helmet-closeup.jpeg',
   mark: '/assets/aero-mark.jpeg',
+  whiteKit: '/assets/white-kit-transparent.png',
   whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
   blackKitSource: '/assets/aero-kit-black-source.jpg',
   whiteJersey: '/assets/product-cutout-jersey-white.png',
@@ -21,10 +22,11 @@ const contactEmail = 'aero.studio@outlook.com'
 
 const storyImages = [
   {
-    title: 'White Jersey',
-    label: 'race cut / light surface',
-    image: assets.whiteJerseySource,
+    title: 'White Kit',
+    label: 'jersey / strapped bib',
+    image: assets.whiteKit,
     className: 'md:col-span-7 md:row-span-2',
+    imageClassName: 'object-contain p-8 sm:p-12',
   },
   {
     title: 'Rider Kit',
@@ -231,7 +233,7 @@ function StoryCard({ item, index }) {
       <motion.img
         src={item.image}
         alt={item.title}
-        className="h-full w-full object-cover grayscale transition duration-1000 group-hover:scale-105"
+        className={`h-full w-full grayscale transition duration-1000 group-hover:scale-105 ${item.imageClassName ?? 'object-cover'}`}
         initial={{ scale: 1.1 }}
         whileInView={{ scale: 1.01 }}
         viewport={{ once: true }}
