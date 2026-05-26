@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 
 const assets = {
@@ -28,10 +28,34 @@ const assets = {
 const contactEmail = 'aero.studio@outlook.com'
 
 const storySelectors = [
-  ['01', 'White Kit'],
-  ['02', 'Black Kit'],
-  ['03', 'Bib Short'],
-  ['04', 'Details'],
+  {
+    number: '01',
+    label: 'White Kit',
+    image: assets.editorialWhiteKit,
+    alt: 'Aero Studio white jersey and bib short',
+    imageClassName: 'object-contain',
+  },
+  {
+    number: '02',
+    label: 'Black Kit',
+    image: assets.editorialBlackKit,
+    alt: 'Aero Studio black jersey and bib short',
+    imageClassName: 'object-contain',
+  },
+  {
+    number: '03',
+    label: 'Bib Short',
+    image: assets.detailChamois,
+    alt: 'Aero Studio bib short chamois detail',
+    imageClassName: 'object-cover',
+  },
+  {
+    number: '04',
+    label: 'Details',
+    image: assets.detailBlackZipperClose,
+    alt: 'Aero Studio black kit zipper and fabric detail',
+    imageClassName: 'object-cover',
+  },
 ]
 
 const storyCards = [
@@ -211,9 +235,11 @@ function BrandStatement() {
 }
 
 function VisualStory() {
+  const [activeStory, setActiveStory] = useState(0)
   const { scrollYProgress } = useScroll()
   const productY = useTransform(scrollYProgress, [0.15, 0.45], [45, -45])
   const productRotate = useTransform(scrollYProgress, [0.15, 0.45], [-1.2, 1.2])
+  const activeScene = storySelectors[activeStory]
 
   return (
     <section id="story" className="relative overflow-hidden bg-black px-5 py-24 sm:px-8 lg:px-12">
@@ -267,13 +293,20 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
               viewport={{ once: true, margin: '-120px' }}
               transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <img
-                src={assets.editorialWhiteKit}
-                alt="Aero Studio white jersey and bib short"
-                className="aero-float mx-auto h-[34rem] w-full object-contain drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] lg:h-[48rem]"
-                loading="lazy"
-                decoding="async"
-              />
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={activeScene.label}
+                  src={activeScene.image}
+                  alt={activeScene.alt}
+                  className={`aero-float mx-auto h-[34rem] w-full drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] lg:h-[48rem] ${activeScene.imageClassName}`}
+                  initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -18, filter: 'blur(10px)' }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </AnimatePresence>
             </motion.div>
             <div className="absolute bottom-8 left-1/2 h-10 w-64 -translate-x-1/2 rounded-full bg-black blur-2xl" />
           </div>
@@ -287,19 +320,21 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="grid gap-0 sm:grid-cols-4">
-            {storySelectors.map(([number, label], index) => (
+            {storySelectors.map((item, index) => (
               <button
-                key={label}
+                key={item.label}
                 type="button"
-                className="group border-white/10 py-4 text-left sm:border-r sm:pr-6"
+                onClick={() => setActiveStory(index)}
+                aria-pressed={activeStory === index}
+                className="group border-white/10 py-4 text-left outline-none transition sm:border-r sm:pr-6"
               >
-                <span className="block text-[0.56rem] uppercase tracking-[0.32em] text-zinc-600">
-                  {number}
+                <span className={`block text-[0.56rem] uppercase tracking-[0.32em] transition ${activeStory === index ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                  {item.number}
                 </span>
-                <span className="mt-4 block text-[0.64rem] uppercase tracking-[0.34em] text-zinc-300 transition group-hover:text-white">
-                  {label}
+                <span className={`mt-4 block text-[0.64rem] uppercase tracking-[0.34em] transition group-hover:text-white ${activeStory === index ? 'text-white' : 'text-zinc-300'}`}>
+                  {item.label}
                 </span>
-                <span className={`mt-5 block h-px bg-white transition-all duration-500 ${index === 0 ? 'w-20' : 'w-0 group-hover:w-16'}`} />
+                <span className={`mt-5 block h-px bg-white transition-all duration-500 ${activeStory === index ? 'w-20' : 'w-0 group-hover:w-16'}`} />
               </button>
             ))}
           </div>
