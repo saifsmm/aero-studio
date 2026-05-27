@@ -267,6 +267,17 @@ function VisualStory() {
   const activeScene = storySelectors[activeStory]
   const isDetailScene = Boolean(activeScene.images)
 
+  useEffect(() => {
+    const storyImages = storySelectors.flatMap((item) => (
+      item.images ? item.images.map((image) => image.src) : [item.image]
+    ))
+
+    storyImages.forEach((src) => {
+      const image = new Image()
+      image.src = src
+    })
+  }, [])
+
   return (
     <section id="story" className="relative overflow-hidden bg-black px-5 py-24 sm:px-8 lg:px-12">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_72%_44%,rgba(255,255,255,0.13),rgba(255,255,255,0.035)_30%,rgba(0,0,0,0)_62%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0)_24%,rgba(255,255,255,0.025)_74%,rgba(0,0,0,0))] opacity-70" />
@@ -323,7 +334,7 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
                 {isDetailScene ? (
                   <motion.div
                     key={activeScene.label}
-                    className="mx-auto grid h-[34rem] w-full max-w-4xl grid-cols-2 gap-3 drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] sm:gap-4 lg:h-[48rem]"
+                    className="mx-auto grid h-[34rem] w-full max-w-4xl grid-cols-2 grid-rows-2 gap-3 drop-shadow-[0_4rem_4rem_rgba(0,0,0,0.88)] sm:h-[42rem] sm:gap-4 lg:h-[48rem]"
                     initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     exit={{ opacity: 0, y: -18, filter: 'blur(10px)' }}
@@ -332,7 +343,7 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
                     {activeScene.images.map((image, index) => (
                       <motion.figure
                         key={image.src}
-                        className={`group relative overflow-hidden bg-zinc-950 ${index === 1 ? 'row-span-2' : ''}`}
+                        className="group relative overflow-hidden bg-zinc-950"
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
