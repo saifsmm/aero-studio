@@ -533,11 +533,49 @@ function QuoteSection() {
 
 function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
   const [interest, setInterest] = useState('Full Kit')
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    setSubmitted(true)
+    setError('')
+
+    const form = event.currentTarget
+    if (!form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
+
+    const formData = new FormData(form)
+    formData.set('productInterest', interest)
+    formData.set('_subject', 'Aero Studio Pre Order Request')
+    formData.set('_template', 'table')
+    formData.set('_captcha', 'false')
+
+    setSending(true)
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${contactEmail}`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Submission failed')
+      }
+
+      form.reset()
+      setInterest('Full Kit')
+      setSubmitted(true)
+    } catch {
+      setError('Something went wrong. Please try again or email us directly.')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -563,7 +601,7 @@ function ContactForm() {
                 request received
               </p>
               <h3 className="mt-5 text-3xl font-extralight uppercase tracking-[0.14em] text-white">
-                Thank you, we will contact you soon.
+                Thank you. We will contact you soon.
               </h3>
               <button
                 type="button"
@@ -585,6 +623,7 @@ function ContactForm() {
                   product interest
                 </span>
                 <select
+                  name="productInterest"
                   value={interest}
                   onChange={(event) => setInterest(event.target.value)}
                   className="h-14 border border-white/10 bg-black px-4 text-sm font-light uppercase tracking-[0.18em] text-white outline-none transition focus:border-white/45"
@@ -606,11 +645,17 @@ function ContactForm() {
                   placeholder="Tell us what you are interested in."
                 />
               </label>
+              {error ? (
+                <p className="text-sm font-light tracking-[0.08em] text-zinc-300">
+                  {error}
+                </p>
+              ) : null}
               <button
                 type="submit"
-                className="mt-4 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black"
+                disabled={sending}
+                className="mt-4 border border-white/30 px-8 py-4 text-[0.62rem] uppercase tracking-[0.36em] text-white transition duration-500 hover:border-white hover:bg-white hover:text-black disabled:cursor-wait disabled:border-white/10 disabled:text-zinc-600 disabled:hover:bg-transparent disabled:hover:text-zinc-600"
               >
-                Submit
+                {sending ? 'Sending' : 'Submit'}
               </button>
             </form>
           )}
@@ -659,13 +704,16 @@ function Footer() {
   return (
     <footer className="bg-black px-5 pb-8 sm:px-8 lg:px-12">
       <div className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-white/10 py-7 text-[0.6rem] uppercase tracking-[0.34em] text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
-        <a href="https://www.instagram.com/aerostudio.ae/" target="_blank" rel="noreferrer" className="transition hover:text-white">
+        <a href="https://www.instagram.com/aerostudio.ae" target="_blank" rel="noreferrer" className="transition hover:text-white">
           Instagram
         </a>
         <a href={`mailto:${contactEmail}`} className="transition hover:text-white">
           {contactEmail}
         </a>
-        <span>aerostudio.ae</span>
+        <a href="https://aerostudio.ae" target="_blank" rel="noreferrer" className="transition hover:text-white">
+          aerostudio.ae
+        </a>
+        <span>© 2026 Aero Studio. All rights reserved.</span>
       </div>
     </footer>
   )
