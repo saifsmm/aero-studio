@@ -1,29 +1,24 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
+import { initBotId } from 'botid/client/core'
+
+initBotId({
+  protect: [{ path: '/api/preorder', method: 'POST' }],
+})
 
 const assets = {
-  hero: '/assets/hero-cyclist-current.png',
+  heroLogo: '/aerostudiotext.png',
   navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
-  fabric: '/assets/fabric-detail.jpeg',
-  helmet: '/assets/helmet-closeup.jpeg',
-  mark: '/assets/aero-mark.jpeg',
-  whiteKit: '/assets/white-kit-transparent.png',
   editorialWhiteKit: '/assets/editorial-white-kit.png',
   editorialBlackKit: '/assets/editorial-black-kit.png',
-  detailBlackZipperWide: '/assets/detail-black-zipper-wide.png',
   detailBlackSleeve: '/assets/detail-black-sleeve.png',
-  detailBlackZipperClose: '/assets/detail-black-zipper-close.png',
-  detailWhiteKitClose: '/assets/detail-white-kit-close.png',
-  detailChamois: '/assets/detail-chamois.png',
   detailChamoisCurrent: '/assets/detail-chamois-current.png',
   detailWhiteKitCurrent: '/assets/detail-white-kit-current.png',
   detailGridCurrent: '/assets/detail-grid-current.png',
   detailBlackZipperCurrent: '/assets/detail-black-zipper-current.png',
   detailBlackSleeveCurrent: '/assets/detail-black-sleeve-current.png',
-  whiteJerseySource: '/assets/aero-jersey-white-source.jpg',
-  blackKitSource: '/assets/aero-kit-black-source.jpg',
   whiteJersey: '/assets/product-cutout-jersey-white.png',
   blackJersey: '/assets/product-cutout-jersey-black.png',
   whiteBib: '/assets/product-cutout-bib-white.png',
@@ -136,7 +131,11 @@ const productOptions = [
 ]
 
 function scrollToHash(id, behavior = 'smooth') {
-  const section = document.querySelector(id)
+  const sectionId = id.startsWith('#') ? id.slice(1) : id
+  const allowedSections = new Set(['top', 'story', 'performance', 'collection', 'drop', 'contact'])
+  if (!allowedSections.has(sectionId)) return
+
+  const section = document.getElementById(sectionId)
   if (!section) return
   const top = section.getBoundingClientRect().top + window.scrollY
   window.scrollTo({ top, behavior })
@@ -197,22 +196,8 @@ function Header() {
 }
 
 function Hero() {
-  const { scrollY } = useScroll()
-  const y = useTransform(scrollY, [0, 900], [0, 130])
-  const scale = useTransform(scrollY, [0, 900], [1.02, 1.09])
-
   return (
-    <section id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black">
-      <motion.picture style={{ y, scale }} className="absolute inset-0">
-        <source srcSet={assets.hero} media="(min-width: 768px)" />
-        <img
-          src={assets.hero}
-          alt="Cinematic black and white cyclist in motion"
-          className="h-full w-full object-cover object-center opacity-95"
-          loading="eager"
-          decoding="async"
-        />
-      </motion.picture>
+    <section id="top" className="hero relative flex items-center justify-center overflow-hidden bg-black">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_44%,rgba(0,0,0,0.78)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 to-transparent" />
 
@@ -222,9 +207,7 @@ function Hero() {
         animate={{ opacity: 1, filter: 'blur(0px)' }}
         transition={{ duration: 1.3, ease: 'easeOut' }}
       >
-        <h1 className="text-balance text-[2.45rem] font-light uppercase leading-none tracking-[0.16em] text-white sm:text-5xl sm:tracking-[0.34em] lg:text-6xl">
-          Aero Studio
-        </h1>
+        <img src={assets.heroLogo} alt="Aero Studio" className="hero-logo" draggable="false" />
         <p className="mt-5 text-[0.64rem] uppercase tracking-[0.56em] text-zinc-300">
           Designed For Speed
         </p>
@@ -313,10 +296,10 @@ Every stitch, every panel, every detail built to perform so you can focus on wha
             <a
               href="#collection"
               onClick={(event) => scrollToSection(event, '#collection')}
-              className="group mt-10 inline-flex items-center gap-6 text-[0.62rem] uppercase tracking-[0.34em] text-white"
+              className="group mt-10 inline-flex items-center gap-3 text-[0.62rem] uppercase tracking-[0.34em] text-white"
             >
               <span>Explore Collection</span>
-              <span className="transition duration-500 group-hover:translate-x-2">-&gt;</span>
+              <span aria-hidden="true" className="collection-arrow transition duration-500 group-hover:translate-x-2" />
             </a>
           </motion.div>
 
@@ -548,20 +531,25 @@ function ContactForm() {
     }
 
     const formData = new FormData(form)
-    formData.set('productInterest', interest)
-    formData.set('_subject', 'Aero Studio Pre Order Request')
-    formData.set('_template', 'table')
-    formData.set('_captcha', 'false')
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      productInterest: interest,
+      message: formData.get('message'),
+      website: formData.get('website'),
+    }
 
     setSending(true)
 
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${contactEmail}`, {
+      const response = await fetch('/api/preorder', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify(payload),
       })
 
       if (!response.ok) {
@@ -572,7 +560,7 @@ function ContactForm() {
       setInterest('Full Kit')
       setSubmitted(true)
     } catch {
-      setError('Something went wrong. Please try again or email us directly.')
+      setError('Something went wrong. Please try again.')
     } finally {
       setSending(false)
     }
@@ -613,11 +601,15 @@ function ContactForm() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="grid gap-4">
+              <label className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+                Website
+                <input name="website" type="text" tabIndex="-1" autoComplete="off" />
+              </label>
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="name" name="name" required />
-                <FormField label="email" name="email" type="email" required />
+                <FormField label="name" name="name" maxLength="80" required />
+                <FormField label="email" name="email" type="email" maxLength="254" required />
               </div>
-              <FormField label="phone" name="phone" type="tel" required />
+              <FormField label="phone" name="phone" type="tel" maxLength="32" required />
               <label className="grid gap-3">
                 <span className="text-[0.58rem] uppercase tracking-[0.36em] text-zinc-500">
                   product interest
@@ -640,6 +632,7 @@ function ContactForm() {
                 <textarea
                   name="message"
                   rows="6"
+                  maxLength="500"
                   required
                   className="resize-none border border-white/10 bg-black px-4 py-4 text-sm font-light tracking-[0.08em] text-white outline-none transition placeholder:text-zinc-700 focus:border-white/45"
                   placeholder="Tell us what you are interested in."
@@ -665,7 +658,7 @@ function ContactForm() {
   )
 }
 
-function FormField({ label, name, type = 'text', required = false }) {
+function FormField({ label, name, type = 'text', maxLength, required = false }) {
   return (
     <label className="grid gap-3">
       <span className="text-[0.58rem] uppercase tracking-[0.36em] text-zinc-500">
@@ -674,6 +667,7 @@ function FormField({ label, name, type = 'text', required = false }) {
       <input
         name={name}
         type={type}
+        maxLength={maxLength}
         required={required}
         className="h-14 border border-white/10 bg-black px-4 text-sm font-light tracking-[0.08em] text-white outline-none transition placeholder:text-zinc-700 focus:border-white/45"
       />
@@ -685,7 +679,7 @@ function FinalCta() {
   return (
     <section id="drop" className="bg-black px-5 pt-28 sm:px-8 lg:px-12">
       <FadeIn className="mx-auto flex min-h-[68vh] max-w-6xl flex-col items-center justify-center text-center">
-        <img src={assets.mark} alt="" className="mb-10 h-14 w-14 object-cover invert" />
+        <img src={assets.navMark} alt="" className="mb-10 h-auto w-20 object-contain sm:w-24" />
         <h2 className="text-5xl font-extralight uppercase leading-none tracking-[0.16em] text-white sm:text-7xl lg:text-8xl">
           Coming Soon
         </h2>

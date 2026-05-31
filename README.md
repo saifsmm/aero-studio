@@ -25,7 +25,11 @@ npm run build
 
 ## Assets
 
-Brand and campaign imagery lives in `public/assets`. The high-resolution logo PDF is also preserved there for future design/export use.
+Brand and campaign imagery used by the website lives in `public/assets`. Internal source and export files live in `brand-source/assets` so Vercel does not publish them.
+
+## Preorder environment variables
+
+Configure the server-only preorder credentials in Vercel using the names in `.env.example`. The form uses Vercel BotID for invisible bot checks and Upstash Redis for the shared rate limit.
 
 ## Vercel
 
