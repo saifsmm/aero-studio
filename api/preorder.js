@@ -116,7 +116,7 @@ async function enforceRateLimit(ip) {
 async function sendPreorderEmail(data) {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.PREORDER_FROM_EMAIL
-  const to = process.env.PREORDER_TO_EMAIL || 'aero.studio@outlook.com'
+  const to = process.env.PREORDER_TO_EMAIL || 'support@aerostudio.ae'
   if (!apiKey || !from) throw new Error('Email service is unavailable')
 
   const text = [

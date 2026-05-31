@@ -25,7 +25,7 @@ const assets = {
   blackBib: '/assets/product-cutout-bib-black.png',
 }
 
-const contactEmail = 'aero.studio@outlook.com'
+const contactEmail = 'support@aerostudio.ae'
 
 const storySelectors = [
   {
