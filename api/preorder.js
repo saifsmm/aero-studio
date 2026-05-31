@@ -146,7 +146,9 @@ async function sendPreorderEmail(data) {
     }),
   })
 
-  if (!response.ok) throw new Error('Email service is unavailable')
+  if (!response.ok) {
+    throw new Error(`Email service rejected request (${response.status})`)
+  }
 }
 
 function sendJson(response, status, body) {
@@ -192,14 +194,18 @@ export default async function handler(request, response) {
       response.setHeader('Retry-After', '60')
       return sendJson(response, 429, { error: 'Request could not be processed.' })
     }
+    console.info('preorder:rate-limit-ok')
     const verification = await checkBotId()
     if (verification.isBot) {
       return sendJson(response, 403, { error: 'Request could not be processed.' })
     }
+    console.info('preorder:botid-ok')
 
     await sendPreorderEmail(validation.data)
+    console.info('preorder:email-sent')
     return sendJson(response, 200, { ok: true })
-  } catch {
+  } catch (error) {
+    console.error('preorder:failed', error instanceof Error ? error.message : 'Unknown error')
     return sendJson(response, 503, { error: 'Request could not be processed.' })
   }
 }
