@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
 import { Activity, CircleDot, Feather, Gauge, ShieldCheck, Wind } from 'lucide-react'
 import { initBotId } from 'botid/client/core'
@@ -9,6 +9,7 @@ initBotId({
 
 const assets = {
   heroLogo: '/aerostudiotext.png',
+  heroVideo: '/assets/hero-video.mp4',
   navMark: '/assets/aero-mark-pdf.png',
   riderBack: '/assets/rider-back.jpeg',
   editorialWhiteKit: '/assets/editorial-white-kit.png',
@@ -23,6 +24,12 @@ const assets = {
   blackJersey: '/assets/product-cutout-jersey-black.png',
   whiteBib: '/assets/product-cutout-bib-white.png',
   blackBib: '/assets/product-cutout-bib-black.png',
+}
+
+const heroVideoConfig = {
+  enabled: true,
+  src: assets.heroVideo,
+  poster: '/back.png',
 }
 
 const contactEmail = 'support@aerostudio.ae'
@@ -196,8 +203,79 @@ function Header() {
 }
 
 function Hero() {
+  const videoRef = useRef(null)
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
+  const [videoFailed, setVideoFailed] = useState(false)
+
+  useEffect(() => {
+    if (!heroVideoConfig.enabled) return undefined
+
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+    const constrainedConnection =
+      connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType)
+
+    if (prefersReducedMotion || constrainedConnection) {
+      return undefined
+    }
+
+    const loadVideo = () => setShouldLoadVideo(true)
+    const idleId = window.requestIdleCallback
+      ? window.requestIdleCallback(loadVideo, { timeout: 1200 })
+      : window.setTimeout(loadVideo, 600)
+
+    return () => {
+      if (window.cancelIdleCallback && typeof idleId === 'number') {
+        window.cancelIdleCallback(idleId)
+      } else {
+        window.clearTimeout(idleId)
+      }
+    }
+  }, [])
+
+  const handleVideoReady = () => {
+    const video = videoRef.current
+    if (!video || videoFailed) return
+
+    const playPromise = video.play()
+    if (playPromise) {
+      playPromise
+        .then(() => setVideoReady(true))
+        .catch(() => {
+          setVideoFailed(true)
+          setVideoReady(false)
+        })
+    } else {
+      setVideoReady(true)
+    }
+  }
+
   return (
     <section id="top" className="hero relative flex items-center justify-center overflow-hidden bg-black">
+      {shouldLoadVideo && !videoFailed ? (
+        <video
+          ref={videoRef}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+            videoReady ? 'opacity-100' : 'opacity-0'
+          }`}
+          poster={heroVideoConfig.poster}
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="none"
+          aria-hidden="true"
+          onCanPlay={handleVideoReady}
+          onPlaying={() => setVideoReady(true)}
+          onError={() => {
+            setVideoFailed(true)
+            setVideoReady(false)
+          }}
+        >
+          <source src={heroVideoConfig.src} type="video/mp4" />
+        </video>
+      ) : null}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.18)_44%,rgba(0,0,0,0.78)_100%)]" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/85 to-transparent" />
 
